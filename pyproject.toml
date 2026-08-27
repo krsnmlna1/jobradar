@@ -1,0 +1,26 @@
+# Workspace root untuk cabang career (~/learning).
+# Keputusan env: uv — dipatenkan 27 Agu 2026, lihat Employment_Skill_Stack_Master.
+#
+# Root ini virtual: nggak di-install sendiri, cuma nampung workspace + satu .venv
+# bersama di ~/learning/.venv. Semua subfolder (software, automation, ai, security,
+# infrastructure) ikut venv ini — `uv run` bakal manjat ke atas nyari pyproject.toml
+# terdekat, dan ketemunya di sini.
+
+[project]
+name = "learning"
+version = "0.1.0"
+description = "Career track workspace — Employment Action Plan Phase 0-6"
+requires-python = ">=3.14"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["software/python"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.7",
+]
