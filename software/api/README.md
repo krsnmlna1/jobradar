@@ -11,6 +11,25 @@ Sistem ini dipakai sendiri: lowongan dari channel (Indeed, RWFA, LinkedIn) masuk
 dinormalisasi, disimpan, lalu bisa dibaca balik. Layer berikutnya numpuk di atasnya —
 scraping (Phase 2), ekstraksi + scoring LLM (Phase 3). Satu sistem, bukan lima repo.
 
+## Peta file
+
+```text
+software/api/
+├── pyproject.toml        member workspace uv, nama package "jobradar" + daftar dependency
+├── schema.sql            DDL tabel jobs + 3 index. Dijalanin manual, belum ada tool migrasi
+├── .env.example          contoh config. Disalin jadi .env (gitignored, isinya password DB)
+├── README.md             file ini
+└── src/jobradar/
+    ├── __init__.py
+    ├── config.py         Settings (pydantic-settings) — baca .env jadi objek python
+    ├── db.py             connection pool psycopg: open_pool / close_pool / get_pool / ping
+    ├── models.py         skema Pydantic: JobIn, Job, Health — validasi masuk & bentuk keluar
+    └── main.py           app FastAPI, lifespan (buka/tutup pool), endpoint GET /health
+```
+
+Rangka awalnya dibikin `uv init --package --name jobradar software/api`, yang sekalian nyatet
+`software/api` ke `members` di `~/learning/pyproject.toml`. Sisanya ditulis tangan.
+
 ## Jalanin
 
 ```bash
@@ -28,7 +47,16 @@ PostgreSQL 18 native di WSL (bukan Docker — RAM WSL dibatasin 4 GB).
 sudo -u postgres createuser --createdb odin     # sekali seumur hidup
 createdb jobradar
 psql -d jobradar -f schema.sql
+
+# WAJIB: role-nya harus punya password, lihat catatan di bawah
+psql -d postgres -c "ALTER ROLE odin PASSWORD 'ganti-ini';"
 ```
+
+Langkah `ALTER ROLE` itu gampang kelewat dan bikin app gagal start dengan
+`fe_sendauth: no password supplied`. Sebabnya Postgres punya **dua pintu dengan aturan auth
+beda**: Unix socket pakai `peer` (nanya ke OS lagi login sebagai siapa, jadi `psql` mulus
+tanpa password), sementara TCP `127.0.0.1:5432` pakai `scram-sha-256` yang wajib password.
+Aplikasi nyambung lewat TCP. Password hasil `ALTER ROLE` masuk ke `DATABASE_URL` di `.env`.
 
 Cek sambungannya lewat aplikasi:
 
@@ -51,7 +79,7 @@ health check yang selalu hijau dan nggak ngukur apa-apa.
 ## Status Phase 1
 
 - [x] FastAPI + psycopg terpasang, app naik, `/health` ada
-- [ ] Postgres terpasang & `schema.sql` kepasang
+- [x] Postgres terpasang & `schema.sql` kepasang
 - [ ] Endpoint ingest + read, terdokumentasi
 - [ ] pytest: happy path + 3 error case
 - [ ] Logging terstruktur + error handling nyata
