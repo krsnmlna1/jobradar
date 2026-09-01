@@ -19,7 +19,6 @@ package = false
 [tool.uv.workspace]
 members = [
     "software/python",
-    "software/api",
 ]
 
 [dependency-groups]
