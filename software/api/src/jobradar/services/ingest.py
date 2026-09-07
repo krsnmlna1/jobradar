@@ -11,12 +11,12 @@ class IngestResult(str, Enum):
 
 async def insert_job(conn, job):
     sql = """
-            insert into jobs (source, ext_id, title, company, url)
-            values (%s, %s, %s, %s, %s)
+            insert into jobs (source, ext_id, title, company, url, description, location, posted_at)
+            values (%s, %s, %s, %s, %s, %s, %s, %s)
             on conflict (source, ext_id)
             do nothing RETURNING id
     """
-    values = (job.source, job.ext_id, job.title, job.company, job.url)
+    values = (job.source, job.ext_id, job.title, job.company, job.url, job.description, job.location, job.posted_at)
     async with conn.cursor() as cur:
         await cur.execute(sql, values)
         row = await cur.fetchone()
