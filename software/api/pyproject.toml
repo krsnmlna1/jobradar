@@ -1,0 +1,31 @@
+[project]
+name = "jobradar"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "krsnmlna1", email = "krsnmlna1@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.141.1",
+    "psycopg[binary,pool]>=3.3.5",
+    "pydantic-settings>=2.15.0",
+    "uvicorn>=0.52.4",
+]
+
+[project.scripts]
+jobradar = "jobradar:main"
+
+[build-system]
+requires = ["uv_build>=0.12.6,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[dependency-groups]
+dev = [
+    "asgi-lifespan>=2.1.0",
+    "python-dotenv>=1.2.3",
+]
