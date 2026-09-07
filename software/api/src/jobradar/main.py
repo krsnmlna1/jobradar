@@ -9,12 +9,10 @@ from psycopg.rows import dict_row
 from jobradar.db import get_conn, lifespan
 from jobradar.schemas import JobDetail, JobIn, JobSummary
 from jobradar.services.ingest import IngestResult, insert_job
+from jobradar.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s %(message)s",
-)
+setup_logging()
 
 app = FastAPI(lifespan=lifespan)
 
