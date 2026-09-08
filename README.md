@@ -1,70 +1,71 @@
-# learning — cabang career
+# jobradar
 
-Workspace untuk Employment Action Plan (Phase 0–6). Cabang audit terpisah di `~/audits/`.
-Tracker + dokumennya di vault Obsidian `D:/Trinity` → `02-Career/`.
+A job-hunting pipeline, built in layers.
 
-## Env: uv — sudah dipatenkan
+Layer 1 is a job-ingest API. It accepts postings over HTTP, stores them in PostgreSQL, and
+serves them back. Ingestion is idempotent, so the same posting can arrive twice without
+producing a duplicate row. The code lives in [`software/api`](software/api), and its README
+covers setup, the endpoints, the logging format, and the gaps that are still open.
 
-Dipilih 27 Agu 2026. Master doc minta pilih satu dan konsisten. **Jangan gonta-ganti** ke
-`venv`, `poetry`, `conda`, atau `pip install` global.
+Later layers add scraping, scoring, and deployment on top of the same database. They land as
+sibling folders in this workspace rather than as separate repositories, because they are
+layers of one product and deserve one history.
 
-Satu venv untuk seluruh cabang, di `~/learning/.venv`. Semua subfolder ikut venv ini —
-`uv` manjat ke atas nyari `pyproject.toml` terdekat dan ketemunya di root sini.
+## Layout
 
-```bash
-uv run python script.py     # jalan dari subfolder mana pun
+```text
+.
+├── pyproject.toml     workspace root, virtual (package = false)
+├── software/
+│   ├── api/           Layer 1: jobradar, the ingest and read API
+│   └── python/        career-hello, a smoke test from the environment setup
+├── automation/        planned
+├── ai/                planned
+├── security/          planned
+└── infrastructure/    planned
+```
+
+Folders are split by skill domain rather than by job title, since any one job is a combination
+of several domains.
+
+## Working in this repo
+
+This is a `uv` workspace with a single shared virtualenv at the root, which every member uses.
+
+```sh
+uv sync --all-packages
 uv run pytest
 uv run ruff check .
 ```
 
-Nggak perlu `source .venv/bin/activate`. Kalau butuh venv-nya kebaca editor, arahin
-interpreter ke `~/learning/.venv/bin/python`.
+Use `uv sync --all-packages`, not a bare `uv sync`. The root sets `package = false`, so a plain
+sync installs only the root dependencies and leaves the workspace members uninstalled.
 
-## Nambah dependency
+`uv run` walks up to the nearest `pyproject.toml`, so it works from any subfolder and there is
+no virtualenv to activate by hand. If an editor needs the interpreter, point it at
+`.venv/bin/python`.
 
-```bash
-uv add httpx                              # ke workspace root
+Adding dependencies:
+
+```sh
+uv add httpx                              # to the workspace root
 uv add --group dev mypy                   # tooling
-uv add --package career-hello httpx       # ke satu member doang
+uv add --package jobradar httpx           # to a single member
 ```
 
-## Nambah project baru
+Adding a member:
 
-```bash
-uv init --package software/api            # bikin member baru
+```sh
+uv init --package software/<name>
 ```
 
-Terus daftarin di `members` pada `pyproject.toml` root, dan:
-
-```bash
-uv sync --all-packages
-```
-
-> ⚠️ **`--all-packages`, bukan `uv sync` polos.** Root ini `package = false`, jadi `uv sync`
-> biasa cuma masang dependency root dan nggak masang member workspace-nya.
-
-## Struktur
-
-```text
-~/learning/
-├── pyproject.toml     # workspace root, virtual (package = false)
-├── .venv/             # SATU venv untuk semua
-├── software/
-│   └── python/        # member: career-hello (Phase 0 smoke test)
-│       api/ backend/ database/ testing/
-├── automation/        # Phase 2
-├── ai/                # Phase 3
-├── security/          # Phase 4
-└── infrastructure/    # Phase 5
-```
-
-Folder dipecah per **domain skill**, bukan per job title — job itu hasil kombinasi skill.
+Then list it under `members` in the root `pyproject.toml` and run `uv sync --all-packages`
+again.
 
 ## Smoke test
 
-```bash
+```sh
 uv run career-hello
 ```
 
-Kalau ini jalan dari clean clone tanpa aktivasi manual, env-nya beres. Itu exit criteria
-Phase 0.
+If that runs from a clean clone with no manual activation, the environment is set up correctly.
