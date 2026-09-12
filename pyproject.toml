@@ -20,6 +20,7 @@ package = false
 members = [
     "software/python",
     "software/api",
+    "automation/scraper",
 ]
 
 [dependency-groups]

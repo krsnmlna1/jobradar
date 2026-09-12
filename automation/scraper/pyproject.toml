@@ -1,0 +1,20 @@
+[project]
+name = "scraper"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "krsnmlna1", email = "krsnmlna1@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "httpx>=0.28.1",
+    "playwright>=1.62.0",
+]
+
+[project.scripts]
+scraper = "scraper:main"
+
+[build-system]
+requires = ["uv_build>=0.12.6,<0.13.0"]
+build-backend = "uv_build"
