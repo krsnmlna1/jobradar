@@ -11,15 +11,3 @@ def send_job(data: dict):
                 raise
             else:
                 time.sleep(2**atmp)
-    
-def main():
-    jobs = {"source": "anu.com",
-            "ext_id": "test_01",
-            "title": "ituanu",
-            "company": "PT Anu",
-            "url": "http://anu.com"}
-    response = send_job(jobs)
-    print(response.status_code, response.json())
-    
-if __name__ == "__main__":
-    main()
