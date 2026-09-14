@@ -11,10 +11,23 @@ know the shape of a posting and where to send it.
 
 The code is split into three modules, and only one of them knows about the other two.
 
-`kalibrr.py` knows how to read Kalibrr. It fetches a listing page from `www.kalibrr.id`, pulls
-the embedded `__NEXT_DATA__` JSON out of the HTML, and maps each raw job to the payload that
-`POST /jobs` expects. No browser is involved, since the listing data is already present in the
-server-rendered page.
+`kalibrr.py` knows how to read Kalibrr. It calls the JSON search endpoint that Kalibrr's own
+website uses, `www.kalibrr.id/kjs/job_board/search`, with `is_work_from_home=true`, and maps each
+raw job to the payload that `POST /jobs` expects. No browser is involved.
+
+All postings are fetched in a single request (`limit=200`, `offset=0`) instead of paging through
+with `offset`. The order of the listing is not stable: it is not sorted by date, and positions
+shift between requests made minutes apart. Paging over an order like that can return the same
+posting twice and skip another without any error, so one wide request is used as a single
+snapshot.
+
+`extract_jobs` refuses a response it cannot trust, and raises `ValueError` in two cases:
+
+- `from_alternative` is true. When a search has no results (for example an offset past the end),
+  Kalibrr silently returns unrelated "alternative" postings instead of an empty list, together
+  with a much larger `count`.
+- The number of postings returned differs from `count`. This catches a server-side cap on
+  `limit`, which would otherwise look like a normal run with some postings missing.
 
 `client.py` knows how to talk to Layer 1. `send_job` posts one payload to
 `http://127.0.0.1:8000/jobs` and returns the response.
@@ -98,15 +111,25 @@ journalctl --user -u jobradar-scrape.service -n 25 --no-pager
 ## Status and known gaps
 
 Working and verified by running it: a full run from Kalibrr to PostgreSQL through systemd,
-duplicate handling across fifteen postings, and recovery when the API comes up partway through
-the retry window.
+a run against the search endpoint that stored all 141 work-from-home postings (14 already
+stored, 127 new), both `ValueError` branches in `extract_jobs`, and recovery when the API comes
+up partway through the retry window.
 
-Only the first page is scraped. The listing reports far more results than the fifteen a single
-page returns, and pagination has not been designed yet.
+The search endpoint change has not yet been exercised by the timer. Runs before it used the
+server-rendered listing page, which only held fifteen postings.
 
-There is no location filtering. The listing used is Kalibrr's work-from-home page, which also
-returns postings outside Indonesia, and region names are inconsistent (the same province
-appears under more than one name), so filtering by exact string match would leak.
+`limit=200` is a fixed number. If the work-from-home listing grows past it, the run fails on the
+`count` check rather than storing a partial set. Whether Kalibrr caps `limit` below some larger
+value has not been tested.
+
+Closed postings are not tracked. A posting that disappears from the listing stays in the
+database as if it were still open.
+
+There is no filtering by role, level or location, and that is intentional. The scraper stores
+every active posting, and filtering against the job criteria happens downstream, where the
+criteria can change without losing data that was never stored. The work-from-home listing also
+includes postings outside Indonesia, and region names are inconsistent (the same province
+appears under more than one name), so exact string matching would leak anyway.
 
 There are no tests. The branch where a posting has no location data, and `location` falls back
 to `None`, has never been exercised by real data.
@@ -119,4 +142,5 @@ cannot wait on a system target. The retry covers the case it was meant to.
 
 `uv run scraper`, the console script declared in `pyproject.toml`, still points at the
 placeholder `main` in `__init__.py` and does not run the pipeline. `playwright` is still listed
-as a dependency, although scraping no longer uses a browser.
+as a dependency, although scraping no longer uses a browser. The only code that imports it is
+`probe.py`, a leftover exploration script.
