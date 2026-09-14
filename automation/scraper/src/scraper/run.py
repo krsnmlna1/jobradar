@@ -1,9 +1,9 @@
-from scraper.kalibrr import LISTING_URL, fetch_html, extract_jobs, to_job_in
+from scraper.kalibrr import LISTING_URL, fetch_listing, extract_jobs, to_job_in
 from scraper.client import send_job
 
 def main():
-    html = fetch_html(LISTING_URL)
-    jobs = extract_jobs(html)
+    data = fetch_listing(LISTING_URL)
+    jobs = extract_jobs(data)
     for job in jobs:
         result = to_job_in(job)
         response = send_job(result)
