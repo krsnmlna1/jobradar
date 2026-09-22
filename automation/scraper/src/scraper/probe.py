@@ -1,7 +1,8 @@
 import sys
-
 from pathlib import Path
+
 from playwright.sync_api import sync_playwright
+
 
 def probe(url):
     with sync_playwright() as p:

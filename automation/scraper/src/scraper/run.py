@@ -1,5 +1,6 @@
-from scraper.kalibrr import LISTING_URL, fetch_listing, extract_jobs, to_job_in
 from scraper.client import send_job
+from scraper.kalibrr import LISTING_URL, extract_jobs, fetch_listing, to_job_in
+
 
 def main():
     data = fetch_listing(LISTING_URL)
