@@ -1,5 +1,8 @@
-import httpx
+import sys
 import time
+
+import httpx
+
 
 def send_job(data: dict):
     for atmp in range(1,6):
@@ -10,4 +13,6 @@ def send_job(data: dict):
             if atmp==5:
                 raise
             else:
-                time.sleep(2**atmp)
+                delay = 2**atmp
+                print(f"Attempt no {atmp} | sleep {delay}",file=sys.stderr)
+                time.sleep(delay)

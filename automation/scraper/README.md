@@ -76,10 +76,18 @@ Description=jobradar scrape run (Layer 2)
 After=network-online.target
 
 [Service]
+Environment=PYTHONUNBUFFERED=1
 Type=oneshot
 WorkingDirectory=/home/odin/learning/automation/scraper
 ExecStart=/home/odin/.local/bin/uv run python -m scraper.run
 ```
+
+`PYTHONUNBUFFERED=1` is there because Python block-buffers stdout whenever it is not attached
+to a terminal, and under systemd stdout is a pipe into the journal. Without it, a run that
+finishes normally flushes everything at exit, so its whole output carries the same timestamp
+and the journal says nothing about pacing, while a run killed by `SIGTERM` never flushes at
+all and leaves no trace of what it did. Stderr is line buffered and is not affected, so
+tracebacks still arrive either way.
 
 `jobradar-scrape.timer`:
 
