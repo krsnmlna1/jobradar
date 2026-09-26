@@ -73,12 +73,14 @@ repository, under `~/.config/systemd/user/`, so they are reproduced here.
 ```ini
 [Unit]
 Description=jobradar scrape run (Layer 2)
-After=network-online.target
+# The user manager has no network-online.target, and after a suspend the
+# Persistent= catch-up fires before Wi-Fi is back. Wait for DNS instead.
 
 [Service]
 Environment=PYTHONUNBUFFERED=1
 Type=oneshot
 WorkingDirectory=/home/odin/learning/automation/scraper
+ExecStartPre=/usr/bin/timeout 180 /bin/sh -c 'until getent hosts www.kalibrr.id >/dev/null; do sleep 5; done'
 ExecStart=/home/odin/.local/bin/uv run python -m scraper.run
 ```
 
@@ -89,6 +91,13 @@ and the journal says nothing about pacing, while a run killed by `SIGTERM` never
 all and leaves no trace of what it did. Stderr is line buffered and is not affected, so
 tracebacks still arrive either way.
 
+`ExecStartPre` waits up to three minutes for `www.kalibrr.id` to resolve before the run
+starts. Most runs are catch-ups that fire the moment the laptop wakes from suspend, which is
+exactly when Wi-Fi has not reconnected yet. `After=network-online.target` cannot cover this: a
+user manager has no such target, and on a system manager it is only reached once at boot, never
+after a resume. This is a different race from the one the retry in `send_job` handles, which
+is about the local API, not the network.
+
 `jobradar-scrape.timer`:
 
 ```ini
@@ -96,7 +105,7 @@ tracebacks still arrive either way.
 Description=Run jobradar scrape daily
 
 [Timer]
-OnCalendar=*-*-* 10:00:00
+OnCalendar=*-*-* 00:00:00
 Persistent=true
 
 [Install]
@@ -104,7 +113,12 @@ WantedBy=timers.target
 ```
 
 A timer is used instead of cron because of `Persistent=true`. If the machine is asleep or off
-at 10:00, the missed run fires as soon as it comes back, while cron would simply skip that day.
+at the scheduled time, the missed run fires as soon as it comes back, while cron would simply
+skip that day. The schedule is midnight on purpose: by the time the laptop is first opened on
+any day, that day's run has already been missed, so it fires on the first login or resume of
+the day, whether that is 8 in the morning or 2 in the afternoon. With a 10:00 schedule, opening
+the laptop at 8 meant waiting until 10, and closing it before then meant no run until the next
+open.
 
 Useful commands:
 
