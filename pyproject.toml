@@ -30,3 +30,7 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "ruff>=0.7",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["automation/scraper/tests", "software/api/test"]
