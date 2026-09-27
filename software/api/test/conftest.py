@@ -1,6 +1,9 @@
+from pathlib import Path
+
 from dotenv import load_dotenv
 
-load_dotenv(".env.test", override=True)
+ENV_TEST = Path(__file__).parent.parent / ".env.test"
+load_dotenv(ENV_TEST, override=True)
 
 import pytest_asyncio
 from asgi_lifespan import LifespanManager
@@ -8,6 +11,8 @@ from httpx import ASGITransport, AsyncClient
 from psycopg import AsyncConnection
 
 from jobradar.config import settings
+if not settings.database_url.endswith("_test"):
+    raise RuntimeError("Wrong database url, check .env.test")
 from jobradar.main import app
 
 
