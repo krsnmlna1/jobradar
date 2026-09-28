@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 DATA_VALID = {
     "source": "test",
     "ext_id": "001",
@@ -49,4 +51,5 @@ async def test_ingest_keeps_optional_fields(client, bersih):
     body = detail.json()
     assert body["description"] == "Backend Intern"
     assert body["location"] == "Sidoarjo"
-    assert body["posted_at"] == "2024-06-01T07:00:00+07:00"
+    posted_at = datetime.fromisoformat(body["posted_at"])
+    assert posted_at == datetime(2024, 6, 1, tzinfo=timezone.utc)
