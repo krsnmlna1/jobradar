@@ -3,10 +3,13 @@ import httpx
 LISTING_URL = "https://www.kalibrr.id/kjs/job_board/search"
 
 def fetch_listing(url):
-    response = httpx.get(url, params={"limit": 200, "offset": 0, "is_work_from_home": "true"}, headers={"User-Agent": "Mozilla/5.0"})
+    response = httpx.get(url, params={"limit": 200, "offset": 0,
+                                      "is_work_from_home": "true"},
+                         headers={"User-Agent": "Mozilla/5.0"},
+                         )
     response.raise_for_status()
     return response.json()
-    
+
 def extract_jobs(data: dict):
     if data["from_alternative"]:
         raise ValueError("Server return alternative value")
@@ -17,7 +20,10 @@ def extract_jobs(data: dict):
 
 def to_job_in(raw):
     components = raw.get("google_location", {}).get("address_components", {})
-    parts = [components.get("city"), components.get("region"), components.get("country")]
+    parts = [components.get("city"),
+             components.get("region"),
+             components.get("country"),
+             ]
     filled = [x for x in parts if x]
     location = ", ".join(filled) or None
     data = {"source": "kalibrr",

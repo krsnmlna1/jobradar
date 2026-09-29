@@ -32,6 +32,6 @@ def main():
         os.dup2(devnull, sys.stdout.fileno())
         sys.exit(1)
 
-        
+
 if __name__ == "__main__":
     main()
