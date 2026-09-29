@@ -11,6 +11,8 @@ def main():
     parser.add_argument("--dry-run", action="store_true",
                         help="fetch and map jobs from Kalibrr, "
                         "print them instead of sending to jobradar")
+    parser.add_argument("--api-url", default="http://127.0.0.1:8000",
+                        help="Base URL of the jobradar API (default: %(default)s)")
     args = parser.parse_args()
 
     data = fetch_listing(LISTING_URL)
@@ -20,7 +22,7 @@ def main():
         if args.dry_run:
             print(result)
         else:
-            response = send_job(result)
+            response = send_job(result, args.api_url)
             print(response.status_code, response.json())
 
         

@@ -4,10 +4,10 @@ import time
 import httpx
 
 
-def send_job(data: dict):
+def send_job(data: dict, api_url: str):
     for atmp in range(1,6):
         try:
-            response = httpx.post("http://127.0.0.1:8000/jobs", json=data)
+            response = httpx.post(f"{api_url}/jobs", json=data)
             return response
         except httpx.ConnectError:
             if atmp==5:
