@@ -45,7 +45,10 @@ postings can share one label.
 
 ## Running
 
-The scraper is installed as the `scraper` command. From anywhere inside the workspace:
+Install the workspace once from its root with `uv sync --all-packages` (see the
+[root README](../../README.md)). A bare `uv sync` or `uv run` at the root does not install the
+scraper, because the root is not a package itself. After that the scraper is available as the
+`scraper` command from anywhere inside the workspace:
 
 ```sh
 uv run scraper --help
