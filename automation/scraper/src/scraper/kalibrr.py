@@ -30,13 +30,3 @@ def to_job_in(raw):
             "location": location
     }
     return data
-
-def main():
-    listing = fetch_listing(LISTING_URL)
-    jobs = extract_jobs(listing)
-    for job in jobs:
-        result = to_job_in(job)
-        print(result)
-    
-if __name__ == "__main__":
-    main()
