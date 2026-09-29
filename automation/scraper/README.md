@@ -77,7 +77,8 @@ If the API is not accepting connections yet, `send_job` retries up to five times
 4, 8 and 16 seconds between attempts. Only `httpx.ConnectError` is retried. A connection error
 means the request never reached the server, so repeating it cannot create a second row. Any
 other error, and a connection error on the fifth attempt, is raised, so the run still exits
-with a failure when the API is really down.
+with a failure when the API is really down. Each retry prints `Attempt no N | sleep S` to
+stderr, so a run that recovered after a wait is visible in the journal.
 
 The retry exists because of a boot race. When the machine starts, systemd launches the API and
 the scrape run at the same moment, and the scraper can reach port 8000 before uvicorn has
@@ -156,10 +157,9 @@ journalctl --user -u jobradar-scrape.service -n 25 --no-pager
 Working and verified by running it: a full run from Kalibrr to PostgreSQL through systemd,
 a run against the search endpoint that stored all 141 work-from-home postings (14 already
 stored, 127 new), both `ValueError` branches in `extract_jobs`, and recovery when the API comes
-up partway through the retry window.
-
-The search endpoint change has not yet been exercised by the timer. Runs before it used the
-server-rendered listing page, which only held fifteen postings.
+up partway through the retry window. Timer runs on the search endpoint have finished normally,
+including a catch-up that fired on resume ten seconds before Wi-Fi reconnected, which the DNS
+wait in `ExecStartPre` held until the network was back.
 
 `limit=200` is a fixed number. If the work-from-home listing grows past it, the run fails on the
 `count` check rather than storing a partial set. Whether Kalibrr caps `limit` below some larger
@@ -174,15 +174,10 @@ criteria can change without losing data that was never stored. The work-from-hom
 includes postings outside Indonesia, and region names are inconsistent (the same province
 appears under more than one name), so exact string matching would leak anyway.
 
-There are no tests. The branch where a posting has no location data, and `location` falls back
-to `None`, has never been exercised by real data.
+The tests in `tests/` cover `extract_jobs` only: one healthy response recorded from Kalibrr,
+and one for each `ValueError` branch. `fetch_listing` and `to_job_in` have no tests, and the
+branch where a posting has no location data, and `location` falls back to `None`, has never
+been exercised by real data.
 
-The retry is silent. Nothing is printed between attempts, so a run that recovered after thirty
-seconds looks the same in the journal as one that succeeded immediately.
-
-`After=network-online.target` in the service has no real effect, because a systemd user instance
-cannot wait on a system target. The retry covers the case it was meant to.
-
-`playwright` is still listed
-as a dependency, although scraping no longer uses a browser. The only code that imports it is
-`probe.py`, a leftover exploration script.
+`playwright` is still listed as a dependency, although scraping no longer uses a browser. The
+only code that imports it is `probe.py`, a leftover exploration script.
