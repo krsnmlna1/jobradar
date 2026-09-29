@@ -29,11 +29,13 @@ snapshot.
 - The number of postings returned differs from `count`. This catches a server-side cap on
   `limit`, which would otherwise look like a normal run with some postings missing.
 
-`client.py` knows how to talk to Layer 1. `send_job` posts one payload to
-`http://127.0.0.1:8000/jobs` and returns the response.
+`client.py` knows how to talk to Layer 1. `send_job` posts one payload to `/jobs` under the
+base URL it is given and returns the response.
 
-`run.py` wires the two together: fetch, extract, map, send, and print the status code and body
-for each posting so a scheduled run leaves a trace in the journal.
+`run.py` wires the two together and is the command line entry point: it parses the flags,
+fetches, extracts and maps, then either sends each posting and prints the status code and body,
+so a scheduled run leaves a trace in the journal, or with `--dry-run` prints the mapped payload
+instead of sending it.
 
 A few mapping choices are deliberate. `ext_id` is Kalibrr's numeric job id, so a posting keeps
 the same identity across runs and duplicates are caught by the API. `description` is stored as
@@ -43,13 +45,32 @@ postings can share one label.
 
 ## Running
 
-Layer 1 must be running on `127.0.0.1:8000` first. See [`software/api`](../../software/api).
+The scraper is installed as the `scraper` command. From anywhere inside the workspace:
 
 ```sh
-uv run python -m scraper.run
+uv run scraper --help
 ```
 
-Each posting prints one line. A new posting returns `201`, and one that is already stored
+To try it without sending anything, use `--dry-run`. It still fetches from Kalibrr, so it needs
+network access, but it prints each mapped payload instead of posting it, and Layer 1 does not
+need to be running:
+
+```sh
+uv run scraper --dry-run | head -n 3
+```
+
+Cutting the output short like this makes the command exit with status 1 and no traceback,
+because the full output was never written.
+
+A real run needs Layer 1 to be up first, see [`software/api`](../../software/api). It expects
+the API at `http://127.0.0.1:8000`, and `--api-url` points it somewhere else:
+
+```sh
+uv run scraper
+uv run scraper --api-url http://192.168.1.20:8000
+```
+
+The URL is the base of the API, without `/jobs`. Each posting prints one line. A new posting returns `201`, and one that is already stored
 returns `200 {'status': 'duplicate'}`, so running the scraper twice in a row is safe.
 
 If the API is not accepting connections yet, `send_job` retries up to five times, sleeping 2,
@@ -162,7 +183,6 @@ seconds looks the same in the journal as one that succeeded immediately.
 `After=network-online.target` in the service has no real effect, because a systemd user instance
 cannot wait on a system target. The retry covers the case it was meant to.
 
-`uv run scraper`, the console script declared in `pyproject.toml`, still points at the
-placeholder `main` in `__init__.py` and does not run the pipeline. `playwright` is still listed
+`playwright` is still listed
 as a dependency, although scraping no longer uses a browser. The only code that imports it is
 `probe.py`, a leftover exploration script.
