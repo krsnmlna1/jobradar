@@ -12,6 +12,9 @@ CREATE TABLE IF NOT EXISTS jobs (
     location    text,
     posted_at   timestamptz,
     ingested_at timestamptz NOT NULL DEFAULT now(),
+    -- NULL = sumbernya nggak bilang. Database lama (sebelum 7 Okt 2026):
+    -- ALTER TABLE jobs ADD COLUMN is_remote boolean;
+    is_remote   boolean,
 
     CONSTRAINT jobs_source_ext_id_key UNIQUE (source, ext_id)
 );
