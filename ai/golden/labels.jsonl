@@ -1,4 +1,4 @@
-{"id": "binance-bap-backend-li-4446794510", "verdict": "pursue", "reason": "Open to current students, \"Fully Remote\" in the posting title, and the responsibilities (eval datasets, regression detection, tests with mocked LLM responses) overlap jobradar's Python testing and eval work; must-have gaps in algorithms/DS and agent experience accepted."}
+{"id": "binance-bap-backend-li-4446794510", "verdict": "skip", "reason": "\"Fully Remote in Singapore\" in the posting title limits remote to another country and the body never mentions Indonesia, which fails the remote gate; the eval and regression work would otherwise overlap jobradar."}
 {"id": "indodana-software-engineer-intern", "verdict": "skip", "reason": "Location Jakarta with no remote or WFH signal anywhere in the text, which fails the remote-only gate; eligibility (third-year IT student) and the Python/SQL nice-to-haves would otherwise fit."}
 {"id": "cloudlinux-python-software-engineer", "verdict": "pursue", "reason": "\"Fully remote work\" stated in benefits; Python, Linux debugging, APIs and SQL overlap jobradar, but it is a non-intern role that calls end-to-end production ownership critical and lists async processing and CI/CD/containers as must-haves, so experience bar is the main risk."}
 {"id": "cloudlinux-c-developer-intern", "verdict": "pursue", "reason": "Remote stated in body and benefits, internship explicitly framed as learning C, Git/Linux CLI/AI-assistant use overlap; C and kernel work are the core of the role and missing, and \"final-year\" vs third-year is an eligibility risk."}
@@ -8,3 +8,30 @@
 {"id": "aail-junior-web-developer-edtech", "verdict": "pursue", "reason": "\"Full-time remote role\" stated in the role description; back-end APIs and databases overlap jobradar, while front-end/web design (half the role) and the Next.js/Supabase stack are gaps."}
 {"id": "gamenimation-studio-support-intern", "verdict": "skip", "reason": "100% remote and open to students, but the work is manual playtesting, asset import, data entry and studio operations rather than software engineering, and the how-to-apply section is an unfilled template placeholder."}
 {"id": "ryvo-ai-automation-solutions-engineer", "verdict": "pursue", "reason": "Remote only in header metadata (\"Jakarta Raya (Jarak jauh)\" from Jobstreet); Python, SQL, REST, Git and Claude/OpenAI APIs are on the listed stack, while \"real automations used in production\" and client-facing work are risks."}
+{"id": "kalibrr-272220", "verdict": "skip", "reason": "Sales role; remote is for Philippines-based candidates on US hours, so it fails both the engineering and the country gates."}
+{"id": "kalibrr-271792", "verdict": "skip", "reason": "Remote, but the work is construction cost estimating, purchasing and admin, not software engineering."}
+{"id": "kalibrr-261661", "verdict": "skip", "reason": "UI/UX design rather than software engineering, and remote is limited to the Philippines."}
+{"id": "kalibrr-271924", "verdict": "skip", "reason": "UI/UX design rather than software engineering (the opening line says \"Junior Programmer\" but every responsibility is design), with periodic office meetups in Quezon City."}
+{"id": "kalibrr-270805", "verdict": "skip", "reason": "Sales team management rather than software engineering."}
+{"id": "kalibrr-261659", "verdict": "skip", "reason": "UI/UX design rather than software engineering, and remote is limited to the Philippines."}
+{"id": "kalibrr-187837", "verdict": "skip", "reason": "Recruiting; \"technical\" describes the candidates being hired, not the work, so it is not software engineering."}
+{"id": "kalibrr-270382", "verdict": "skip", "reason": "Account management and customer support; \"learn the basics of programming\" does not make it a software engineering role."}
+{"id": "kalibrr-271562", "verdict": "skip", "reason": "Managing an outsourced customer service agency, not software engineering."}
+{"id": "kalibrr-269381", "verdict": "skip", "reason": "AML/KYC compliance and fraud operations, not software engineering."}
+{"id": "kalibrr-262831", "verdict": "skip", "reason": "Mall partnerships and permits, 50% onsite in the Philippines, not software engineering."}
+{"id": "kalibrr-270340", "verdict": "skip", "reason": "Customer support coordination for UK property management, not software engineering."}
+{"id": "kalibrr-271738", "verdict": "skip", "reason": "Customer support plus manual testing with occasional client-office visits in the Philippines; the main work is not software engineering."}
+{"id": "kalibrr-271531", "verdict": "skip", "reason": "Accounts payable accounting, and remote is for someone based in the Philippines."}
+{"id": "kalibrr-261658", "verdict": "skip", "reason": "Design leadership rather than software engineering, remote limited to the Philippines."}
+{"id": "kalibrr-261422", "verdict": "skip", "reason": "Bookkeeping team lead requiring a CPA, not software engineering."}
+{"id": "kalibrr-264814", "verdict": "skip", "reason": "Marketing director role, remote but \"Manila-based\"."}
+{"id": "kalibrr-272559", "verdict": "skip", "reason": "Sales support on UK hours, not software engineering."}
+{"id": "kalibrr-272667", "verdict": "skip", "reason": "Data entry from instructions, not software engineering."}
+{"id": "kalibrr-272656", "verdict": "skip", "reason": "English tutoring, not software engineering."}
+{"id": "kalibrr-272650", "verdict": "skip", "reason": "English tutoring, not software engineering."}
+{"id": "kalibrr-272669", "verdict": "skip", "reason": "Administrative and clerical work, not software engineering."}
+{"id": "kalibrr-272716", "verdict": "skip", "reason": "Organizing online content from instructions, not software engineering."}
+{"id": "kalibrr-213325", "verdict": "skip", "reason": "Business development with 3+ years required, remote with a Jakarta preference; not software engineering."}
+{"id": "kalibrr-272919", "verdict": "skip", "reason": "Chat-based sales for adult-content creators, not software engineering."}
+{"id": "kalibrr-271532", "verdict": "pursue", "reason": "\"Fully remote\" with no country limit, an internship, and writing SQL against production data overlaps jobradar; data analysis sits at the edge of the engineering gate."}
+{"id": "kalibrr-273107", "verdict": "skip", "reason": "\"Remote opportunity\" for a senior role whose core stack (React/Next.js, Node.js/NestJS, TypeScript, headless CMS) is entirely outside what the candidate claims."}
