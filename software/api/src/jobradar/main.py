@@ -7,9 +7,9 @@ from psycopg import AsyncConnection, OperationalError
 from psycopg.rows import dict_row
 
 from jobradar.db import get_conn, lifespan
+from jobradar.logging_config import setup_logging
 from jobradar.schemas import JobDetail, JobIn, JobSummary
 from jobradar.services.ingest import IngestResult, insert_job
-from jobradar.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
 setup_logging()

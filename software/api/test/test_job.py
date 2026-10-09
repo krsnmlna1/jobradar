@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 DATA_VALID = {
     "source": "test",
@@ -52,7 +52,7 @@ async def test_ingest_keeps_optional_fields(client, bersih):
     assert body["description"] == "Backend Intern"
     assert body["location"] == "Sidoarjo"
     posted_at = datetime.fromisoformat(body["posted_at"])
-    assert posted_at == datetime(2024, 6, 1, tzinfo=timezone.utc)
+    assert posted_at == datetime(2024, 6, 1, tzinfo=UTC)
 
 async def test_ingest_keep_is_remote(client, bersih):
     data = DATA_VALID.copy()

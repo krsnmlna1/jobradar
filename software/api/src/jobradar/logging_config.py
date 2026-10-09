@@ -1,7 +1,6 @@
 import json
 import logging
 
-
 _RESERVED = set(logging.LogRecord("", 0, "", 0, "", None, None).__dict__) | {
     "message",
     "asctime",
