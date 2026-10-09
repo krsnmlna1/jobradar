@@ -53,3 +53,20 @@ async def test_ingest_keeps_optional_fields(client, bersih):
     assert body["location"] == "Sidoarjo"
     posted_at = datetime.fromisoformat(body["posted_at"])
     assert posted_at == datetime(2024, 6, 1, tzinfo=timezone.utc)
+
+async def test_ingest_keep_is_remote(client, bersih):
+    data = DATA_VALID.copy()
+    data["is_remote"] = True
+    response = await client.post("/jobs", json=data)
+    assert response.status_code == 201
+
+    detail = await client.get(f"/jobs/{response.json()["id"]}")
+    assert detail.json()["is_remote"] is True
+
+async def test_ingest_keep_is_remote_default_to_none(client, bersih):
+    data = DATA_VALID
+    response = await client.post("/jobs", json=data)
+    assert response.status_code == 201
+
+    detail = await client.get(f"/jobs/{response.json()["id"]}")
+    assert detail.json()["is_remote"] is None

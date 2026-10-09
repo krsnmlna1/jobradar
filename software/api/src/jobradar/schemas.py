@@ -12,6 +12,7 @@ class JobIn(BaseModel):
     description: str | None = None
     location: str | None = None
     posted_at: datetime | None = None
+    is_remote: bool | None = None
 
 
 class JobSummary(BaseModel):
@@ -28,3 +29,4 @@ class JobDetail(JobSummary):
     url: str
     description: str | None = None
     ingested_at: datetime
+    is_remote: bool | None = None
