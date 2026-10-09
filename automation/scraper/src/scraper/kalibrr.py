@@ -33,6 +33,7 @@ def to_job_in(raw):
             "posted_at": raw["activation_date"],
             "description": raw["description"],
             "url": f"https://www.kalibrr.id/id-ID/c/{raw['company']['code']}/jobs/{raw['id']}/{raw['slug']}",
-            "location": location
+            "location": location,
+            "is_remote": raw.get("is_work_from_home")
     }
     return data
