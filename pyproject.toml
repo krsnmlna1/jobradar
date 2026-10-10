@@ -21,6 +21,7 @@ members = [
     "software/python",
     "software/api",
     "automation/scraper",
+    "ai/triage",
 ]
 
 [dependency-groups]
@@ -33,4 +34,4 @@ dev = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["automation/scraper/tests", "software/api/test"]
+testpaths = ["automation/scraper/tests", "software/api/test", "ai/triage/tests"]
