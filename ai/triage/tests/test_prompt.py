@@ -56,13 +56,16 @@ def test_render_url():
     assert "URL: y" in text
 
 
-def test_render_header_full():
+def test_render_full():
     expected = (
         "Title: Backend Intern\n"
         "Company: Acme\n"
         "Location: Surabaya\n"
         "Work from home: yes, according to the job board\n"
-        "URL: https://example.com"
+        "URL: https://example.com\n"
+        "\n"
+        "Description:\n"
+        "We are hiring backend intern"
     )
     posting = Posting(
         title="Backend Intern",
@@ -70,6 +73,19 @@ def test_render_header_full():
         location="Surabaya",
         url="https://example.com",
         is_remote=True,
+        description="We are hiring backend intern",
     )
     text = render(posting)
     assert text == expected
+
+
+def test_render_description():
+    posting = Posting(title="x", url="y", description="We are hiring a backend intern.")
+    text = render(posting)
+    assert "\n\nDescription:\nWe are hiring a backend intern." in text
+
+
+def test_render_description_is_none():
+    posting = Posting(title="x", url="y")
+    text = render(posting)
+    assert "\n\nDescription: not provided" in text

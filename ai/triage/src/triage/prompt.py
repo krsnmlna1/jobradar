@@ -15,4 +15,11 @@ def render(posting: Posting) -> str:
         lines.append(f"Location: {posting.location}")
     lines.append(wfh)
     lines.append(f"URL: {posting.url}")
+    if posting.description is not None:
+        lines.append("")
+        lines.append("Description:")
+        lines.append(posting.description)
+    else:
+        lines.append("")
+        lines.append("Description: not provided")
     return "\n".join(lines)
