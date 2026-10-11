@@ -18,3 +18,58 @@ def test_render_remote_none():
     posting = Posting(title="x", url="y", is_remote=None)
     text = render(posting)
     assert "Work from home: not stated by the job board" in text
+
+
+def test_render_title():
+    posting = Posting(title="x", url="y", is_remote=None)
+    text = render(posting)
+    assert "Title: x" in text
+
+
+def test_render_company():
+    posting = Posting(title="x", url="y", company="Acme")
+    text = render(posting)
+    assert "Company: Acme" in text
+
+
+def test_render_company_none():
+    posting = Posting(title="x", url="y")
+    text = render(posting)
+    assert "Company" not in text
+
+
+def test_render_location():
+    posting = Posting(title="x", url="y", location="Surabaya")
+    text = render(posting)
+    assert "Location: Surabaya" in text
+
+
+def test_render_location_none():
+    posting = Posting(title="x", url="y")
+    text = render(posting)
+    assert "Location" not in text
+
+
+def test_render_url():
+    posting = Posting(title="x", url="y")
+    text = render(posting)
+    assert "URL: y" in text
+
+
+def test_render_header_full():
+    expected = (
+        "Title: Backend Intern\n"
+        "Company: Acme\n"
+        "Location: Surabaya\n"
+        "Work from home: yes, according to the job board\n"
+        "URL: https://example.com"
+    )
+    posting = Posting(
+        title="Backend Intern",
+        company="Acme",
+        location="Surabaya",
+        url="https://example.com",
+        is_remote=True,
+    )
+    text = render(posting)
+    assert text == expected
