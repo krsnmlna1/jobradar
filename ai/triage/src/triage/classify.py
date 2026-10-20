@@ -24,6 +24,6 @@ def classify(posting: Posting, profile: str, client, model: str) -> Verdict:
         system=profile,
         messages=[{"role": "user", "content": render(posting)}],
         tools=[RECORD_VERDICT],
-        tool_choice={"type": "tool", "name": "record_verdict"},
+        tool_choice={"type": "tool", "name": RECORD_VERDICT["name"]},
     )
     return extract_verdict(response.content)
