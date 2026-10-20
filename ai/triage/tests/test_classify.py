@@ -2,7 +2,7 @@ from types import SimpleNamespace
 
 import pytest
 from anthropic.types import TextBlock, ToolUseBlock
-from triage.classify import classify, extract_verdict
+from triage.classify import RECORD_VERDICT, classify, extract_verdict
 from triage.prompt import render
 from triage.schemas import Posting, Verdict
 
@@ -83,3 +83,20 @@ def test_classify_sends_model_profile_and_posting():
     assert fake.messages.kwargs["messages"] == [
         {"role": "user", "content": render(posting)}
     ]
+
+
+def test_classify_forces_record_verdict_tool():
+    block = ToolUseBlock(
+        id="toolu_test",
+        name="record_verdict",
+        type="tool_use",
+        input={"verdict": "pursue", "reason": "Fully remote over the world"},
+    )
+    fake = FakeClient([block])
+    posting = Posting(title="Backend Developer", url="https://example.com")
+    classify(posting, "Remote only", fake, "model-x")
+    assert fake.messages.kwargs["tools"] == [RECORD_VERDICT]
+    assert fake.messages.kwargs["tool_choice"] == {
+        "type": "tool",
+        "name": "record_verdict",
+    }
