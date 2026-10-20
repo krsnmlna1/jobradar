@@ -1,7 +1,25 @@
+from types import SimpleNamespace
+
 import pytest
 from anthropic.types import TextBlock, ToolUseBlock
-from triage.classify import extract_verdict
-from triage.schemas import Verdict
+from triage.classify import classify, extract_verdict
+from triage.prompt import render
+from triage.schemas import Posting, Verdict
+
+
+class FakeMessages:
+    def __init__(self, content):
+        self.content = content
+        self.kwargs = None
+
+    def create(self, **kwargs):
+        self.kwargs = kwargs
+        return SimpleNamespace(content=self.content)
+
+
+class FakeClient:
+    def __init__(self, content):
+        self.messages = FakeMessages(content)
 
 
 def test_extract_verdict_reads_tool_input():
@@ -35,3 +53,33 @@ def test_no_tool_use_block():
     )
     with pytest.raises(ValueError, match="no tool_use block"):
         extract_verdict([block])
+
+
+def test_classify_returns_verdict_from_response():
+    block = ToolUseBlock(
+        id="toolu_test",
+        name="record_verdict",
+        type="tool_use",
+        input={"verdict": "pursue", "reason": "Fully remote over the world"},
+    )
+    fake = FakeClient([block])
+    posting = Posting(title="Backend Developer", url="https://example.com")
+    result = classify(posting, "Remote Only", fake, "model-x")
+    assert result == Verdict(verdict="pursue", reason="Fully remote over the world")
+
+
+def test_classify_sends_model_profile_and_posting():
+    block = ToolUseBlock(
+        id="toolu_test",
+        name="record_verdict",
+        type="tool_use",
+        input={"verdict": "pursue", "reason": "Fully remote over the world"},
+    )
+    fake = FakeClient([block])
+    posting = Posting(title="Backend Developer", url="https://example.com")
+    classify(posting, "Remote only", fake, "model-x")
+    assert fake.messages.kwargs["model"] == "model-x"
+    assert fake.messages.kwargs["system"] == "Remote only"
+    assert fake.messages.kwargs["messages"] == [
+        {"role": "user", "content": render(posting)}
+    ]
