@@ -1,4 +1,8 @@
 def tally(labels: dict[str, str], predictions: dict[str, str]) -> dict[str, int]:
+    if labels.keys() != predictions.keys():
+        raise ValueError(
+            f"labels and predictions cover different cases: {labels.keys() ^ predictions.keys()}"
+        )
     counts = {"tp": 0, "fn": 0, "fp": 0, "tn": 0}
     for case_id, label in labels.items():
         prediction = predictions[case_id]
