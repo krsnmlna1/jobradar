@@ -15,3 +15,19 @@ def tally(labels: dict[str, str], predictions: dict[str, str]) -> dict[str, int]
         else:
             counts["tn"] += 1
     return counts
+
+
+def recall(counts: dict[str, int]) -> float | None:
+    try:
+        result = counts["tp"] / (counts["tp"] + counts["fn"])
+        return result
+    except ZeroDivisionError:
+        return None
+
+
+def precision(counts: dict[str, int]) -> float | None:
+    try:
+        result = counts["tp"] / (counts["tp"] + counts["fp"])
+        return result
+    except ZeroDivisionError:
+        return None
