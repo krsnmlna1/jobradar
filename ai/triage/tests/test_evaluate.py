@@ -1,5 +1,6 @@
 import pytest
-from triage.evaluate import load_labels, precision, recall, tally
+from triage.evaluate import load_kalibrr, load_labels, precision, recall, tally
+from triage.schemas import Posting
 
 labels = {
     "a": "pursue",
@@ -62,3 +63,13 @@ def test_load_labels():
     text = '{"id": "a", "verdict": "pursue", "reason": "remote, Python fits"}\n{"id": "b", "verdict": "skip", "reason": "onsite Jakarta"}'
     response = load_labels(text)
     assert response == {"a": "pursue", "b": "skip"}
+
+
+def test_load_kalibrr():
+    text = '{"id": "kalibrr-1", "posting": {"title": "Backend Intern", "url": "https://example.com/1", "is_remote": true}}'
+    response = load_kalibrr(text)
+    assert response == {
+        "kalibrr-1": Posting(
+            title="Backend Intern", url="https://example.com/1", is_remote=True
+        )
+    }

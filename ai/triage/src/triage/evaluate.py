@@ -1,5 +1,7 @@
 import json
 
+from triage.schemas import Posting
+
 
 def tally(labels: dict[str, str], predictions: dict[str, str]) -> dict[str, int]:
     if labels.keys() != predictions.keys():
@@ -41,4 +43,12 @@ def load_labels(text: str) -> dict[str, str]:
     for line in text.splitlines():
         row = json.loads(line)
         result[row["id"]] = row["verdict"]
+    return result
+
+
+def load_kalibrr(text: str) -> dict[str, Posting]:
+    result = {}
+    for line in text.splitlines():
+        row = json.loads(line)
+        result[row["id"]] = Posting.model_validate(row["posting"])
     return result
