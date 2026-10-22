@@ -1,5 +1,7 @@
 import json
+from pathlib import Path
 
+from triage.parse import parse_raw
 from triage.schemas import Posting
 
 
@@ -51,4 +53,12 @@ def load_kalibrr(text: str) -> dict[str, Posting]:
     for line in text.splitlines():
         row = json.loads(line)
         result[row["id"]] = Posting.model_validate(row["posting"])
+    return result
+
+
+def load_txt(folder: Path) -> dict[str, Posting]:
+    result = {}
+    for path in folder.glob("*.txt"):
+        text = path.read_text()
+        result[path.stem] = parse_raw(text)
     return result

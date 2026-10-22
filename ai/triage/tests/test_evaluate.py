@@ -1,5 +1,12 @@
 import pytest
-from triage.evaluate import load_kalibrr, load_labels, precision, recall, tally
+from triage.evaluate import (
+    load_kalibrr,
+    load_labels,
+    load_txt,
+    precision,
+    recall,
+    tally,
+)
 from triage.schemas import Posting
 
 labels = {
@@ -71,5 +78,20 @@ def test_load_kalibrr():
     assert response == {
         "kalibrr-1": Posting(
             title="Backend Intern", url="https://example.com/1", is_remote=True
+        )
+    }
+
+
+def test_load_txt(tmp_path):
+    (tmp_path / "a.txt").write_text(
+        "title: Backend Intern\nurl: https://example.com/a\n\nPython and SQL."
+    )
+    (tmp_path / "notes.html").write_text("<p>ignore me</p>")
+    response = load_txt(tmp_path)
+    assert response == {
+        "a": Posting(
+            title="Backend Intern",
+            url="https://example.com/a",
+            description="Python and SQL.",
         )
     }
