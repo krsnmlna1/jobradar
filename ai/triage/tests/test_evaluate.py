@@ -1,5 +1,5 @@
 import pytest
-from triage.evaluate import precision, recall, tally
+from triage.evaluate import load_labels, precision, recall, tally
 
 labels = {
     "a": "pursue",
@@ -56,3 +56,9 @@ def test_precision_is_none_without_pursue_predictions():
     counts = {"tp": 0, "fn": 1, "fp": 0, "tn": 2}
     response = precision(counts)
     assert response is None
+
+
+def test_load_labels():
+    text = '{"id": "a", "verdict": "pursue", "reason": "remote, Python fits"}\n{"id": "b", "verdict": "skip", "reason": "onsite Jakarta"}'
+    response = load_labels(text)
+    assert response == {"a": "pursue", "b": "skip"}

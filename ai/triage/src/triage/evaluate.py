@@ -1,3 +1,6 @@
+import json
+
+
 def tally(labels: dict[str, str], predictions: dict[str, str]) -> dict[str, int]:
     if labels.keys() != predictions.keys():
         raise ValueError(
@@ -31,3 +34,11 @@ def precision(counts: dict[str, int]) -> float | None:
         return result
     except ZeroDivisionError:
         return None
+
+
+def load_labels(text: str) -> dict[str, str]:
+    result = {}
+    for line in text.splitlines():
+        row = json.loads(line)
+        result[row["id"]] = row["verdict"]
+    return result
