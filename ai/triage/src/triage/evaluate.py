@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+from triage.classify import classify
 from triage.parse import parse_raw
 from triage.schemas import Posting
 
@@ -61,4 +62,14 @@ def load_txt(folder: Path) -> dict[str, Posting]:
     for path in folder.glob("*.txt"):
         text = path.read_text()
         result[path.stem] = parse_raw(text)
+    return result
+
+
+def predict(
+    cases: dict[str, Posting], profile: str, client, model: str
+) -> dict[str, str]:
+    result = {}
+    for case_id, posting in cases.items():
+        verdict = classify(posting, profile, client, model)
+        result[case_id] = verdict.verdict
     return result

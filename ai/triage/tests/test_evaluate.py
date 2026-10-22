@@ -1,9 +1,12 @@
 import pytest
+from anthropic.types import ToolUseBlock
+from test_classify import FakeClient
 from triage.evaluate import (
     load_kalibrr,
     load_labels,
     load_txt,
     precision,
+    predict,
     recall,
     tally,
 )
@@ -95,3 +98,35 @@ def test_load_txt(tmp_path):
             description="Python and SQL.",
         )
     }
+
+
+def test_predict_skip():
+    block = ToolUseBlock(
+        id="toolu_test",
+        name="record_verdict",
+        type="tool_use",
+        input={"verdict": "skip", "reason": "Fully remote at Singapore"},
+    )
+    fake = FakeClient([block])
+    cases = {
+        "a": Posting(title="Backend Intern", url="https://example.com/a"),
+        "b": Posting(title="Data Engineer", url="https://example.com/b"),
+    }
+    response = predict(cases, "profil apa aja", fake, "model-x")
+    assert response == {"a": "skip", "b": "skip"}
+
+
+def test_predict_pursue():
+    block = ToolUseBlock(
+        id="toolu_test",
+        name="record_verdict",
+        type="tool_use",
+        input={"verdict": "pursue", "reason": "Fully remote over the world"},
+    )
+    fake = FakeClient([block])
+    cases = {
+        "a": Posting(title="Backend Intern", url="https://example.com/a"),
+        "b": Posting(title="Data Engineer", url="https://example.com/b"),
+    }
+    response = predict(cases, "profil apa aja", fake, "model-x")
+    assert response == {"a": "pursue", "b": "pursue"}
