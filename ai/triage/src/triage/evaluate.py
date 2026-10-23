@@ -41,6 +41,17 @@ def precision(counts: dict[str, int]) -> float | None:
         return None
 
 
+def misses(labels: dict[str, str], predictions: dict[str, str]) -> dict[str, list[str]]:
+    result = {"fn": [], "fp": []}
+    for case_id, label in labels.items():
+        prediction = predictions[case_id]
+        if label == "pursue" and prediction == "skip":
+            result["fn"].append(case_id)
+        elif label == "skip" and prediction == "pursue":
+            result["fp"].append(case_id)
+    return result
+
+
 def load_labels(text: str) -> dict[str, str]:
     result = {}
     for line in text.splitlines():

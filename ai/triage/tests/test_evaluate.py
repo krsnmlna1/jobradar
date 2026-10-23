@@ -5,6 +5,7 @@ from triage.evaluate import (
     load_kalibrr,
     load_labels,
     load_txt,
+    misses,
     precision,
     predict,
     recall,
@@ -67,6 +68,11 @@ def test_precision_is_none_without_pursue_predictions():
     counts = {"tp": 0, "fn": 1, "fp": 0, "tn": 2}
     response = precision(counts)
     assert response is None
+
+
+def test_misses():
+    result = misses(labels, predictions)
+    assert result == {"fn": ["b"], "fp": ["d", "e"]}
 
 
 def test_load_labels():
