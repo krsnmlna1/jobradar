@@ -1,9 +1,14 @@
 import json
 from pathlib import Path
 
+from anthropic import AnthropicBedrock
+
 from triage.classify import classify
 from triage.parse import parse_raw
 from triage.schemas import Posting
+
+AI_DIR = Path(__file__).parents[3]
+MODEL = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
 
 
 def tally(labels: dict[str, str], predictions: dict[str, str]) -> dict[str, int]:
@@ -84,3 +89,21 @@ def predict(
         verdict = classify(posting, profile, client, model)
         result[case_id] = verdict.verdict
     return result
+
+
+def main() -> None:
+    labels = load_labels((AI_DIR / "golden" / "labels.jsonl").read_text())
+    txt = load_txt(AI_DIR / "golden" / "raw")
+    kalibrr = load_kalibrr((AI_DIR / "golden" / "raw" / "kalibrr.jsonl").read_text())
+    cases = txt | kalibrr
+
+    profile = (AI_DIR / "profile.md").read_text()
+    client = AnthropicBedrock(aws_region="us-east-1", max_retries=8)
+    predictions = predict(cases, profile, client, MODEL)
+
+    counts = tally(labels, predictions)
+    missed = misses(labels, predictions)
+    print(f"tp={counts['tp']} fn={counts['fn']} fp={counts['fp']} tn={counts['tn']}")
+    print(f"recall={recall(counts)} precision={precision(counts)}")
+    print(f"fn: {missed['fn']}")
+    print(f"fp: {missed['fp']}")
