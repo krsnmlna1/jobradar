@@ -14,7 +14,10 @@ class FakeMessages:
 
     def create(self, **kwargs):
         self.kwargs = kwargs
-        return SimpleNamespace(content=self.content)
+        return SimpleNamespace(
+            content=self.content,
+            usage=SimpleNamespace(input_tokens=100, output_tokens=30),
+        )
 
 
 class FakeClient:
@@ -64,8 +67,10 @@ def test_classify_returns_verdict_from_response():
     )
     fake = FakeClient([block])
     posting = Posting(title="Backend Developer", url="https://example.com")
-    result = classify(posting, "Remote Only", fake, "model-x")
-    assert result == Verdict(verdict="pursue", reason="Fully remote over the world")
+    verdict, usage = classify(posting, "Remote Only", fake, "model-x")
+    assert verdict == Verdict(verdict="pursue", reason="Fully remote over the world")
+    assert usage.input_tokens == 100
+    assert usage.output_tokens == 30
 
 
 def test_classify_sends_model_profile_and_posting():

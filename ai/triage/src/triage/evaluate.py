@@ -83,12 +83,16 @@ def load_txt(folder: Path) -> dict[str, Posting]:
 
 def predict(
     cases: dict[str, Posting], profile: str, client, model: str
-) -> dict[str, str]:
+) -> tuple[dict[str, str], int, int]:
     result = {}
+    input_token = 0
+    output_token = 0
     for case_id, posting in cases.items():
-        verdict = classify(posting, profile, client, model)
+        verdict, usage = classify(posting, profile, client, model)
         result[case_id] = verdict.verdict
-    return result
+        input_token += usage.input_tokens
+        output_token += usage.output_tokens
+    return result, input_token, output_token
 
 
 def main() -> None:
@@ -99,7 +103,7 @@ def main() -> None:
 
     profile = (AI_DIR / "profile.md").read_text()
     client = AnthropicBedrock(aws_region="us-east-1", max_retries=8)
-    predictions = predict(cases, profile, client, MODEL)
+    predictions, input_tokens, output_tokens = predict(cases, profile, client, MODEL)
 
     counts = tally(labels, predictions)
     missed = misses(labels, predictions)
@@ -107,3 +111,5 @@ def main() -> None:
     print(f"recall={recall(counts)} precision={precision(counts)}")
     print(f"fn: {missed['fn']}")
     print(f"fp: {missed['fp']}")
+    print(f"total input token: {input_tokens}")
+    print(f"total output token: {output_tokens}")

@@ -1,4 +1,4 @@
-from anthropic.types import ContentBlock, ToolUseBlock
+from anthropic.types import ContentBlock, ToolUseBlock, Usage
 
 from triage.prompt import render
 from triage.schemas import Posting, Verdict
@@ -17,7 +17,9 @@ def extract_verdict(content: list[ContentBlock]) -> Verdict:
     raise ValueError("response has no tool_use block")
 
 
-def classify(posting: Posting, profile: str, client, model: str) -> Verdict:
+def classify(
+    posting: Posting, profile: str, client, model: str
+) -> tuple[Verdict, Usage]:
     response = client.messages.create(
         model=model,
         max_tokens=512,
@@ -26,4 +28,4 @@ def classify(posting: Posting, profile: str, client, model: str) -> Verdict:
         tools=[RECORD_VERDICT],
         tool_choice={"type": "tool", "name": RECORD_VERDICT["name"]},
     )
-    return extract_verdict(response.content)
+    return extract_verdict(response.content), response.usage

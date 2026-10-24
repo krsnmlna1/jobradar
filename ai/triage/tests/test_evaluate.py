@@ -118,8 +118,12 @@ def test_predict_skip():
         "a": Posting(title="Backend Intern", url="https://example.com/a"),
         "b": Posting(title="Data Engineer", url="https://example.com/b"),
     }
-    response = predict(cases, "profil apa aja", fake, "model-x")
+    response, input_tokens, output_tokens = predict(
+        cases, "profil apa aja", fake, "model-x"
+    )
     assert response == {"a": "skip", "b": "skip"}
+    assert input_tokens == 200
+    assert output_tokens == 60
 
 
 def test_predict_pursue():
@@ -134,5 +138,9 @@ def test_predict_pursue():
         "a": Posting(title="Backend Intern", url="https://example.com/a"),
         "b": Posting(title="Data Engineer", url="https://example.com/b"),
     }
-    response = predict(cases, "profil apa aja", fake, "model-x")
+    response, input_tokens, output_tokens = predict(
+        cases, "profil apa aja", fake, "model-x"
+    )
     assert response == {"a": "pursue", "b": "pursue"}
+    assert input_tokens == 200
+    assert output_tokens == 60
