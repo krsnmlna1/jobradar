@@ -81,6 +81,10 @@ def load_txt(folder: Path) -> dict[str, Posting]:
     return result
 
 
+def make_client() -> AnthropicBedrock:
+    return AnthropicBedrock(aws_region="us-east-1", max_retries=8, timeout=30)
+
+
 def predict(
     cases: dict[str, Posting], profile: str, client, model: str
 ) -> tuple[dict[str, str], int, int]:
@@ -102,7 +106,7 @@ def main() -> None:
     cases = txt | kalibrr
 
     profile = (AI_DIR / "profile.md").read_text()
-    client = AnthropicBedrock(aws_region="us-east-1", max_retries=8)
+    client = make_client()
     predictions, input_tokens, output_tokens = predict(cases, profile, client, MODEL)
 
     counts = tally(labels, predictions)

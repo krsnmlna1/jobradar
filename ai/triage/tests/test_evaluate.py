@@ -5,6 +5,7 @@ from triage.evaluate import (
     load_kalibrr,
     load_labels,
     load_txt,
+    make_client,
     misses,
     precision,
     predict,
@@ -144,3 +145,9 @@ def test_predict_pursue():
     assert response == {"a": "pursue", "b": "pursue"}
     assert input_tokens == 200
     assert output_tokens == 60
+
+
+def test_make_client():
+    client = make_client()
+    assert client.timeout == 30
+    assert client.max_retries == 8
