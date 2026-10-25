@@ -1,4 +1,5 @@
 from anthropic.types import ContentBlock, ToolUseBlock, Usage
+from pydantic import ValidationError
 
 from triage.prompt import render
 from triage.schemas import Posting, Verdict
@@ -17,10 +18,8 @@ def extract_verdict(content: list[ContentBlock]) -> Verdict:
     raise ValueError("response has no tool_use block")
 
 
-def classify(
-    posting: Posting, profile: str, client, model: str
-) -> tuple[Verdict, Usage]:
-    response = client.messages.create(
+def ask(posting: Posting, profile: str, client, model: str):
+    return client.messages.create(
         model=model,
         max_tokens=512,
         system=profile,
@@ -28,4 +27,14 @@ def classify(
         tools=[RECORD_VERDICT],
         tool_choice={"type": "tool", "name": RECORD_VERDICT["name"]},
     )
-    return extract_verdict(response.content), response.usage
+
+
+def classify(
+    posting: Posting, profile: str, client, model: str
+) -> tuple[Verdict, Usage]:
+    response = ask(posting, profile, client, model)
+    try:
+        return extract_verdict(response.content), response.usage
+    except ValidationError:
+        response = ask(posting, profile, client, model)
+        return extract_verdict(response.content), response.usage
