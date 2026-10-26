@@ -1,7 +1,7 @@
 [project]
 name = "triage"
 version = "0.1.0"
-description = "Add your description here"
+description = "LLM pursue/skip verdicts for job postings, measured against a golden set"
 readme = "README.md"
 authors = [
     { name = "krsnmlna1", email = "krsnmlna1@gmail.com" }
