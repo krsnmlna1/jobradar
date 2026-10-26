@@ -101,23 +101,23 @@ and the bill cannot be split per run.
 **Invalid output.** If the tool input does not match the `Verdict` schema (for example a verdict
 of `"maybe"`), Pydantic raises `ValidationError`. `classify` calls the model once more with the
 same arguments. If the second answer is also invalid, the error propagates and the run stops.
-It does not fall back to a default verdict, because an invented `pursue` would be counted as a
-true or false positive and change the score without anyone noticing. A crash is visible; a wrong
-number is not. Both paths are tested with a fake client that returns a different answer on each
-call.
+It does not fall back to a default verdict, because a default `pursue` or `skip` would change the
+score silently. A crash is visible; a wrong number is not. Both paths are tested with a fake
+client that returns a different answer on each call.
 
 **Timeout.** The SDK default read timeout is 600 seconds and timeouts are retried, so with 8
 retries a hung request could stall a run for about 90 minutes before failing. The client is
 created with a 30 second timeout, which bounds the worst case at 9 × 30 = 270 seconds. A normal
-call returns about 120 output tokens and finishes well within that. `make_client` is tested to
-keep both values.
+call returns about 120 output tokens, and 30 seconds is an estimate from that response size;
+call durations have not been measured. `make_client` is tested to keep both values.
 
 **Rate limits.** A 37-case run sent back to back hit HTTP 429. The SDK already retries 429 with
 exponential backoff; `max_retries` is raised from the default 2 to 8, and that value is covered
 by the same test. If the retries run out, the run stops with the error.
 
 When `classify` retries after invalid output, only the second call's token usage is returned, so
-the token count of that run is slightly low. This is rare and has been left as is.
+the token count of that run is slightly low. In the 23 Oct run, which had validation but no retry
+yet, all 37 calls returned valid output, so this has been left as is.
 
 ## Design decision: token usage stays out of `Verdict`
 
