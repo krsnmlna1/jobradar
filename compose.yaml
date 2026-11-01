@@ -12,6 +12,11 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql
       - ./software/api/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U jobradar -d jobradar"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
   api:
     build:
       context: .
@@ -21,7 +26,8 @@ services:
     ports:
       - "127.0.0.1:8001:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:
