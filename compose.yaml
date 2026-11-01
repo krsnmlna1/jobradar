@@ -28,6 +28,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  scraper:
+    build:
+      context: .
+      dockerfile: automation/scraper/Dockerfile
+    command: ["scraper", "--api-url", "http://api:8000"]
+    depends_on:
+      - api
+    profiles: ["jobs"]
 
 volumes:
   pgdata:
