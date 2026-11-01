@@ -1,0 +1,11 @@
+.git
+.venv
+**/.env
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+ai/golden/raw
+software/rust
+software/api/tmp
+CLAUDE.md
+STATE.md
