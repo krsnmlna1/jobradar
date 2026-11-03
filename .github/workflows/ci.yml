@@ -8,6 +8,25 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: jobradar
+          POSTGRES_PASSWORD: ci-only
+          POSTGRES_DB: jobradar_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U jobradar -d jobradar_test"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 15
+
+    env:
+      DATABASE_URL: postgresql://jobradar:ci-only@localhost:5432/jobradar_test
+
     steps:
       - uses: actions/checkout@v7
 
@@ -18,3 +37,7 @@ jobs:
       - run: uv sync --all-packages --frozen
 
       - run: uv run ruff check
+
+      - run: psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f software/api/schema.sql
+
+      - run: uv run pytest
