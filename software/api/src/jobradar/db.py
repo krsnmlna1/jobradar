@@ -12,6 +12,7 @@ async def lifespan(app: FastAPI):
         conninfo=settings.database_url,
         min_size=settings.db_pool_min,
         max_size=settings.db_pool_max,
+        timeout=settings.db_pool_timeout,
         open=False,
     )
     await pool.open(wait=True)

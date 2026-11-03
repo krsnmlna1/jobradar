@@ -5,6 +5,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from psycopg import AsyncConnection, OperationalError
 from psycopg.rows import dict_row
+from psycopg_pool import PoolTimeout
 
 from jobradar.db import get_conn, lifespan
 from jobradar.logging_config import setup_logging
@@ -15,6 +16,12 @@ logger = logging.getLogger(__name__)
 setup_logging()
 
 app = FastAPI(lifespan=lifespan)
+
+
+@app.exception_handler(PoolTimeout)
+async def pool_timeout_handler(request, exc):
+    logger.error("Pool timeout: %s", exc)
+    return JSONResponse(status_code=503, content={"detail": "Database Error"})
 
 
 @app.get("/health")
