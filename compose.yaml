@@ -36,6 +36,20 @@ services:
     depends_on:
       - api
     profiles: ["jobs"]
+  caddy:
+    image: caddy:2
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - api
+    profiles: ["web"]
 
 volumes:
   pgdata:
+  caddy_data:

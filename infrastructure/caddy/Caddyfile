@@ -1,0 +1,12 @@
+{$SITE_ADDRESS:localhost} {
+	@read {
+		method GET HEAD
+		path /health /jobs /jobs/*
+	}
+	handle @read {
+		reverse_proxy api:8000
+	}
+	handle {
+		respond "Not found" 404
+	}
+}
