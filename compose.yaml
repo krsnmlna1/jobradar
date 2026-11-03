@@ -17,6 +17,7 @@ services:
       interval: 2s
       timeout: 5s
       retries: 15
+    restart: unless-stopped
   api:
     build:
       context: .
@@ -28,6 +29,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
   scraper:
     build:
       context: .
@@ -49,6 +51,7 @@ services:
     depends_on:
       - api
     profiles: ["web"]
+    restart: unless-stopped
 
 volumes:
   pgdata:
