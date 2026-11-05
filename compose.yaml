@@ -38,6 +38,8 @@ services:
     depends_on:
       - api
     profiles: ["jobs"]
+    environment:
+      HC_PING_URL: ${HC_PING_URL:-}
   caddy:
     image: caddy:2
     environment:

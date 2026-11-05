@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 
+import httpx
+
 from scraper.client import send_job
 from scraper.kalibrr import LISTING_URL, extract_jobs, fetch_listing, to_job_in
 
@@ -19,6 +21,7 @@ def main():
 
     data = fetch_listing(LISTING_URL)
     jobs = extract_jobs(data)
+    failed = False
     try:
         for job in jobs:
             result = to_job_in(job)
@@ -27,6 +30,17 @@ def main():
             else:
                 response = send_job(result, args.api_url)
                 print(response.status_code, response.json())
+                note = response.status_code
+                if note not in (200, 201):
+                    failed = True
+
+        if failed or not jobs:
+            print("Unhealthy")
+        else:
+            print("Healthy")
+            url = os.environ.get("HC_PING_URL")
+            if url and not args.dry_run:
+                httpx.get(url, timeout=10)
     except BrokenPipeError:
         devnull = os.open(os.devnull, os.O_WRONLY)
         os.dup2(devnull, sys.stdout.fileno())
