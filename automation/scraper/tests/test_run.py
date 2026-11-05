@@ -2,7 +2,6 @@ import json
 from pathlib import Path
 
 import httpx
-
 from scraper import run
 
 FIXTURE = Path(__file__).parent / "fixtures" / "kalibrr_search.json"
