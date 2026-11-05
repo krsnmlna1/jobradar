@@ -21,3 +21,12 @@ CREATE TABLE IF NOT EXISTS jobs (
 
 CREATE INDEX IF NOT EXISTS jobs_posted_at_idx ON jobs (posted_at DESC NULLS LAST);
 CREATE INDEX IF NOT EXISTS jobs_company_idx   ON jobs (company);
+
+CREATE TABLE IF NOT EXISTS job_verdicts (
+    job_id        bigint PRIMARY KEY REFERENCES jobs (id),
+    verdict       text NOT NULL CHECK (verdict IN ('pursue', 'skip')),
+    reason        text NOT NULL,
+    model         text NOT NULL,
+    classified_at timestamptz NOT NULL DEFAULT now(),
+    notified_at   timestamptz
+);
