@@ -60,3 +60,13 @@ def test_run_saves_each_verdict_to_its_job(conn):
         (first, "pursue", "fits", MODEL, None),
         (second, "skip", "sales", MODEL, None),
     ]
+
+
+def test_run_does_not_reclassify_judged_jobs(conn):
+    add_job(conn, "a", "Junior Backend")
+    conn.commit()
+    client_1 = FakeClient([answer("pursue", "fits")])
+    run(conn, "profile", client_1)
+    client_2 = FakeClient([])
+    assert run(conn, "profile", client_2) == (0, 0, 0)
+    assert client_2.messages.calls == 0
