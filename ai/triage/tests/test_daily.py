@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import psycopg
 from anthropic.types import ToolUseBlock
-from triage.daily import run
+from triage.daily import pending_jobs, run
 from triage.evaluate import MODEL
 
 
@@ -70,3 +70,14 @@ def test_run_does_not_reclassify_judged_jobs(conn):
     client_2 = FakeClient([])
     assert run(conn, "profile", client_2) == (0, 0, 0)
     assert client_2.messages.calls == 0
+
+
+def test_run_stops_at_limit(conn):
+    add_job(conn, "a", "Junior Backend")
+    add_job(conn, "b", "Senior Sales")
+    third = add_job(conn, "c", "Junior QA")
+    conn.commit()
+
+    client = FakeClient([answer("pursue", "fits"), answer("skip", "sales")])
+    assert run(conn, "profile", client, limit=2) == (2, 200, 60)
+    assert [job_id for job_id, _ in pending_jobs(conn)] == [third]
