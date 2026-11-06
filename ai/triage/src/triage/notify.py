@@ -1,4 +1,8 @@
+import argparse
+import os
+
 import httpx
+import psycopg
 from psycopg.rows import dict_row
 
 
@@ -40,3 +44,13 @@ def run(conn, token: str, chat_id: str) -> int:
         )
         conn.commit()
     return len(rows)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Send unsent pursue verdicts to Telegram"
+    )
+    parser.parse_args()
+    conn = psycopg.connect(os.environ["DATABASE_URL"])
+    count = run(conn, os.environ["TELEGRAM_BOT_TOKEN"], os.environ["TELEGRAM_CHAT_ID"])
+    print(f"sent: {count}")
