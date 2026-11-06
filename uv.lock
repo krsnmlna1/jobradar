@@ -804,6 +804,7 @@ version = "0.1.0"
 source = { editable = "ai/triage" }
 dependencies = [
     { name = "anthropic", extra = ["bedrock"] },
+    { name = "httpx" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic" },
 ]
@@ -811,6 +812,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "anthropic", extras = ["bedrock"], specifier = ">=1.15.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3.5" },
     { name = "pydantic", specifier = ">=2.13.5" },
 ]
