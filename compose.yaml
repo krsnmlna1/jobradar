@@ -40,6 +40,20 @@ services:
     profiles: ["jobs"]
     environment:
       HC_PING_URL: ${HC_PING_URL:-}
+  triage:
+    build:
+      context: .
+      dockerfile: ai/triage/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: ["jobs"]
+    environment:
+      DATABASE_URL: postgresql://jobradar:${POSTGRES_PASSWORD}@db:5432/jobradar
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
   caddy:
     image: caddy:2
     environment:
